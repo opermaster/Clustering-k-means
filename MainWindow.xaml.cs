@@ -25,7 +25,7 @@ namespace Clustering
     }
     public partial class MainWindow : Window {
         public Colors[] means_colors={
-                Colors.TEAL,
+             Colors.TEAL,
              Colors.GOLD,
              Colors.SALMON,  
              Colors.BLACK,
@@ -36,12 +36,11 @@ namespace Clustering
         public const int height = 800;
         public Pixent canvas;
         public List<Circle> cluster_circles = new List<Circle>();
-        public List<Circle> means = new List<Circle>();
+        public List<Circle> means= new List<Circle>();
         private int CalcDistance(int x1, int y1, int x2, int y2) {
             return (int)Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
         }
         public void GenerateCluster(int ammount, int cx, int cy, int radius, Colors color) {
-            
             var temp = new List<Circle>();
             for (int i = 0; i < ammount; i++) {
                 Random rnd = new Random();
@@ -74,6 +73,17 @@ namespace Clustering
                 point.color=means[Array.IndexOf(distances, distances.Min())].color;
             }
         }
+        public void Update() {
+            foreach(Circle mean in means) {
+                List<Circle> assigned_circles = cluster_circles.Where(circ => circ.color == mean.color)
+                    .ToList();
+                int c = assigned_circles.Count;
+                int cx = assigned_circles.Select(circle => circle.x).Sum();
+                int cy = assigned_circles.Select(circle => circle.y).Sum();
+                mean.x = cx / c;
+                mean.y = cy / c;
+            }
+        }
         public void PrintAllData() {
             foreach (Circle point in cluster_circles) {
                 canvas.FillCircle(point.x, point.y,point.radius,point.color);
@@ -82,13 +92,20 @@ namespace Clustering
                 canvas.FillCircle(mean.x, mean.y, mean.radius, mean.color);
             }
         }
+        private static BitmapSource LoadImage(string path) {
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+                return BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            }
+        }
         public MainWindow() {
             canvas = new Pixent(width, height);
             canvas.FillBackGround(Colors.LIGHTGREEN);
             GenerateCluster(20, 400, 400, 10, Colors.BLUE);
             GenerateCluster(20, 200, 200, 10, Colors.BLUE);
             GenerateCluster(20, 600, 200, 10, Colors.BLUE);
-            GenerateMeans(3,20);
+            GenerateCluster(20, 200, 600, 10, Colors.BLUE);
+            GenerateCluster(20, 600, 600, 10, Colors.BLUE);
+            GenerateMeans(5,20);
             canvas.SaveAsPng("first.png");
 
             Assignment();
@@ -96,14 +113,46 @@ namespace Clustering
             PrintAllData();
             canvas.SaveAsPng("second.png");
 
-            InitializeComponent();
-            var path = Path.Combine(Environment.CurrentDirectory, "first.png");
-            BitmapImage image = new BitmapImage(new Uri(path));
-            image1_test.Source = image;
+            Update();
+            canvas.FillBackGround(Colors.LIGHTGREEN);
+            PrintAllData();
+            canvas.SaveAsPng("third.png");
 
-            path = Path.Combine(Environment.CurrentDirectory, "second.png");
-            image = new BitmapImage(new Uri(path));
-            image2_test.Source = image;
+            InitializeComponent();
+
+            image1_test.Source = LoadImage("first.png"); 
+
+            image2_test.Source = LoadImage("second.png");
+
+            image3_test.Source = LoadImage("third.png");
+        }
+
+        private void Regenerate_Button_Click(object sender, RoutedEventArgs e) {
+            cluster_circles = new List<Circle>();
+            means= new List<Circle>();
+            canvas.FillBackGround(Colors.LIGHTGREEN);
+            GenerateCluster(20, 400, 400, 10, Colors.BLUE);
+            GenerateCluster(20, 200, 200, 10, Colors.BLUE);
+            GenerateCluster(20, 600, 200, 10, Colors.BLUE);
+
+            GenerateMeans(3, 20);
+            
+            canvas.SaveAsPng("first.png");
+            image1_test.Source = LoadImage("first.png");
+        }
+
+        private void Clustering_Button_Click(object sender, RoutedEventArgs e) {
+            Assignment();
+            canvas.FillBackGround(Colors.LIGHTGREEN);
+            PrintAllData();
+            canvas.SaveAsPng("second.png");
+            Update();
+            canvas.FillBackGround(Colors.LIGHTGREEN);
+            PrintAllData();
+            canvas.SaveAsPng("third.png");
+
+            image2_test.Source = LoadImage("second.png");
+            image3_test.Source = LoadImage("third.png"); 
         }
     }
 }
