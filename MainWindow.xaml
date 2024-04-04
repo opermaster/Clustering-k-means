@@ -5,8 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Clustering"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <Image x:Name="image_test"></Image>
+        Title="MainWindow" Height="800" Width="1600">
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Image Grid.Column="0" x:Name="image1_test"></Image>
+        <Image Grid.Column="1" x:Name="image2_test"></Image>
     </Grid>
 </Window>
