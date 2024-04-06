@@ -100,12 +100,10 @@ namespace Clustering
         public MainWindow() {
             canvas = new Pixent(width, height);
             canvas.FillBackGround(Colors.LIGHTGREEN);
-            GenerateCluster(20, 400, 400, 10, Colors.BLUE);
-            GenerateCluster(20, 200, 200, 10, Colors.BLUE);
-            GenerateCluster(20, 600, 200, 10, Colors.BLUE);
-            GenerateCluster(20, 200, 600, 10, Colors.BLUE);
-            GenerateCluster(20, 600, 600, 10, Colors.BLUE);
-            GenerateMeans(5,20);
+            GenerateCluster(20, 400, 400, 5, Colors.BLUE);
+            GenerateCluster(20, 200, 200, 5, Colors.BLUE);
+            GenerateCluster(20, 600, 200, 5, Colors.BLUE);
+            GenerateMeans(3,20);
             canvas.SaveAsPng("first.png");
 
             Assignment();
@@ -131,11 +129,23 @@ namespace Clustering
             cluster_circles = new List<Circle>();
             means= new List<Circle>();
             canvas.FillBackGround(Colors.LIGHTGREEN);
-            GenerateCluster(20, 400, 400, 10, Colors.BLUE);
-            GenerateCluster(20, 200, 200, 10, Colors.BLUE);
-            GenerateCluster(20, 600, 200, 10, Colors.BLUE);
 
-            GenerateMeans(3, 20);
+            //100,100;200,200;300,300;
+            int elem_ammount = Convert.ToInt32( Cluster_Count.Text);
+
+            string[] clusers_coords = Cluster_Coord.Text
+                    .Replace(" ", "")
+                    .Split(";");
+            foreach (string coord in clusers_coords) {
+                string[] x_y = coord.Split(",");
+                int x = Convert.ToInt32(x_y[0]);
+                int y = Convert.ToInt32(x_y[1]);
+                GenerateCluster(elem_ammount, x, y, 5, Colors.BLUE);
+            }
+
+            int means_ammount = Convert.ToInt32(Centroids_Count.Text);
+
+            GenerateMeans(means_ammount, 20);
             
             canvas.SaveAsPng("first.png");
             image1_test.Source = LoadImage("first.png");
